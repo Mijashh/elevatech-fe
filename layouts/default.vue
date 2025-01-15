@@ -4,6 +4,8 @@
     <Navbar />
     <slot/>
     <hr class="mt-8" >
-    <!-- <SiteFooter /> -->
+    <div>
+    <Footer />
+    </div>
   </div>
 </template>
