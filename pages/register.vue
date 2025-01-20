@@ -100,16 +100,11 @@
   const route = useRoute()
   const router = useRouter()
   const toast = useToast()
-  toast.add({
-      title: ('Request submitted successfully'),
-      color: 'red',
-    })
   const userTypes = [
     { label: 'Student', value: 'student' },
     { label: 'Company', value: 'company' }
   ]
   
-  // Initialize form with type from query params
   const userType = computed(() => route.query.type?.toString() || 'student')
   
   const form = reactive({
@@ -163,28 +158,29 @@
       
       const { data, error, status } = await useApi('/auth/signup/', {
         method: 'POST',
-        body: form
+        body: form,
+        watch:false,
       })
-
-      if (status === 201) {
+      if (status.value === 'success') {
         toast.add({
           title: 'Success!',
           description: 'Your account has been created successfully',
           color: 'green'
         })
-        router.push(`/dashboard/${form.role}`)
+        router.push(`/`)
+        store.isLoginModelOpen = true
       } else {
         toast.add({
           title: 'Error!',
-          description: error.message || 'An error occurred. Please try again',
-          color: 'error'
+          description: error.value.data?.email[0] || 'An error occurred. Please try again',
+          color: 'red'
         })
       }
     } catch (error) {
       toast.add({
         title: 'Error!',
-        description: 'An error occurred. Please try again',
-        color: 'error'
+        description:  error || 'An error occurred. Please try again',
+        color: 'red'
       })
     } finally {
       isLoading.value = false

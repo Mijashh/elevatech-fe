@@ -46,13 +46,24 @@
           <!-- Auth Buttons -->
           <div class="flex items-center space-x-3">
             <UButton
-              @click="store.isLoginModelOpen = true"
+              v-if="!userStore.user"
+              @click="userStore.isLoginModelOpen = true"
               color="white"
               variant="solid"
               class="hidden md:flex"
             >
               Login
             </UButton>
+
+            <UBadge
+              v-else
+              color="white"
+              variant="solid"
+              class="hidden md:flex items-center space-x-2"
+            >
+              <UIcon name="i-heroicons-user-circle" class="w-5 h-5" />
+              <span>{{ userStore.user.name }}</span>
+            </UBadge>
 
             <!-- Mobile Menu Button -->
             <UButton
@@ -66,59 +77,9 @@
         </div>
       </div>
     </div>
+<!-- Login Modal -->
+ <LoginModal />
 
-    <!-- Login Modal -->
-    <UModal v-model="store.isLoginModelOpen">
-      <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100' }">
-        <template #header>
-          <div class="flex items-center gap-2">
-            <UIcon name="i-heroicons-user-circle" class="w-6 h-6 text-primary" />
-            <h3 class="text-xl font-semibold">Welcome Back</h3>
-          </div>
-        </template>
-
-        <form @submit.prevent="handleLogin" class="space-y-4 py-4">
-          <UFormGroup label="Email">
-            <UInput
-              v-model="loginForm.email"
-              type="email"
-              placeholder="Enter your email"
-              icon="i-heroicons-envelope"
-              required
-            />
-          </UFormGroup>
-
-          <UFormGroup label="Password">
-            <UInput
-              v-model="loginForm.password"
-              type="password"
-              placeholder="Enter your password"
-              icon="i-heroicons-lock-closed"
-              required
-            />
-          </UFormGroup>
-        </form>
-
-        <template #footer>
-          <div class="flex justify-between items-center gap-4">
-            <UButton
-              color="gray"
-              variant="soft"
-              @click="store.isLoginModelOpen = false"
-            >
-              Cancel
-            </UButton>
-            <UButton
-              color="primary"
-              @click="handleLogin"
-              :loading="isLoading"
-            >
-              Login
-            </UButton>
-          </div>
-        </template>
-      </UCard>
-    </UModal>
 
     <!-- Mobile Menu -->
     <UModal v-model="isMobileMenuOpen" class="md:hidden">
@@ -145,12 +106,7 @@ import { store } from '~/store/store'
 
 const search = ref('')
 const isMobileMenuOpen = ref(false)
-const isLoading = ref(false)
-
-const loginForm = reactive({
-  email: '',
-  password: ''
-})
+const userStore = useStatefulCookie('user-store')
 
 const mobileMenuItems = [
   { label: 'Explore', to: '/explore', icon: 'i-heroicons-globe-alt' },
@@ -160,18 +116,6 @@ const mobileMenuItems = [
   { label: 'Register', to: '/register', icon: 'i-heroicons-user-plus' }
 ]
 
-const handleLogin = async () => {
-  try {
-    isLoading.value = true
-    // Add your login logic here
-    await new Promise(resolve => setTimeout(resolve, 1000)) // Simulated delay
-    store.isLoginModelOpen = false
-  } catch (error) {
-    console.error('Login failed:', error)
-  } finally {
-    isLoading.value = false
-  }
-}
 </script>
 
 <style scoped>
