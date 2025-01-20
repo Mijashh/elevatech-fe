@@ -1,5 +1,5 @@
 <template>
-    <main class="bg-gray-50 py-12">
+    <main class="bg-gray-50 py-20">
       <div class="container mx-auto px-6">
         <UCard class="max-w-md mx-auto">
           <template #header>
@@ -92,15 +92,18 @@
         </UCard>
       </div>
     </main>
-  </template>
+</template>
   
-  <script setup>
-import { store } from '~/store/store'
+<script setup>
+  import { store } from '~/store/store'
 
   const route = useRoute()
   const router = useRouter()
   const toast = useToast()
-  
+  toast.add({
+      title: ('Request submitted successfully'),
+      color: 'red',
+    })
   const userTypes = [
     { label: 'Student', value: 'student' },
     { label: 'Company', value: 'company' }
@@ -124,7 +127,6 @@ import { store } from '~/store/store'
   
   const isLoading = ref(false)
   
-  // Watch for query param changes
   watch(() => route.query.type, (newType) => {
     form.role = newType?.toString() || 'student'
   })
@@ -159,29 +161,33 @@ import { store } from '~/store/store'
     try {
       isLoading.value = true
       
-      // Add your registration API call here
-      // Example:
-      // await $fetch('/api/register', {
-      //   method: 'POST',
-      //   body: form
-      // })
-  
-      toast.add({
-        title: 'Success!',
-        description: 'Your account has been created successfully',
-        color: 'green'
+      const { data, error, status } = await useApi('/auth/signup/', {
+        method: 'POST',
+        body: form
       })
-  
-      // Redirect to appropriate dashboard
-      router.push(`/dashboard/${form.role}`)
+
+      if (status === 201) {
+        toast.add({
+          title: 'Success!',
+          description: 'Your account has been created successfully',
+          color: 'green'
+        })
+        router.push(`/dashboard/${form.role}`)
+      } else {
+        toast.add({
+          title: 'Error!',
+          description: error.message || 'An error occurred. Please try again',
+          color: 'error'
+        })
+      }
     } catch (error) {
       toast.add({
-        title: 'Error',
-        description: error.message || 'Registration failed. Please try again.',
-        color: 'red'
+        title: 'Error!',
+        description: 'An error occurred. Please try again',
+        color: 'error'
       })
     } finally {
       isLoading.value = false
     }
   }
-  </script>
+</script>

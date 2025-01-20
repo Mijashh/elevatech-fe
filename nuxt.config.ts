@@ -7,5 +7,13 @@ export default defineNuxtConfig({
   colorMode: {
     preference: 'light',
   },
-  modules: ['@nuxt/ui', '@nuxtjs/tailwindcss', '@nuxt/eslint']
+  modules: ['@nuxt/ui', '@nuxtjs/tailwindcss', '@nuxt/eslint'],
+  runtimeConfig: {
+    public: {
+      api: {
+        baseURL: '',
+      },
+      baseURL: '',
+    },
+  },
 })
