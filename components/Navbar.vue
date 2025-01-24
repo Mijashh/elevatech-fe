@@ -102,8 +102,6 @@
 </template>
 
 <script setup>
-import { store } from '~/store/store'
-
 const search = ref('')
 const isMobileMenuOpen = ref(false)
 const userStore = useStatefulCookie('user-store')
