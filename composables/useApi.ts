@@ -1,5 +1,5 @@
 import { useFetch } from '#app'
-import { parseURL, joinURL } from 'ufo'
+import { joinURL, parseURL } from 'ufo'
 
 type UseFetchOptions = Parameters<typeof useFetch>[1]
 
@@ -25,38 +25,8 @@ export const useApi: typeof useFetch = (
       } else {
         store = useStatefulCookie('user-store')
       }
-
       if (store?.value?.token) {
-        options.headers = {
-          Authorization: `Bearer ${store.value.token}`,
-        }
-      }
-      if (!store.value?.token) return
-      const { expiresAt, refreshToken, token } = store.value
-      if (expiresAt
-        && !(['/api/auth/refresh-token', '/api/auth/logout'].includes(request))
-        && checkDateExpiry(expiresAt, 10 * 60 * 1000)
-      ) {
-        const { data, error } = await useFetch('/api/auth/refresh-token', {
-          method: 'POST',
-          body: {
-            token: refreshToken,
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        if (data.value) {
-          store.value.token = data.value?.token
-          store.value.refreshToken = data.value?.newRefreshToken
-          store.value.expiresAt = data.value?.expiresAt
-          options.headers = {
-            Authorization: `Bearer ${data.value?.token}`,
-          }
-        } else if (error.value && error.value.data.statusCode === 401) {
-          store.value = {}
-          await navigateTo('/')
-        }
+        options.headers.set('Authorization', `Bearer ${store.value.token}`)
       }
     },
 
